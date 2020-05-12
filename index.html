@@ -1,0 +1,217 @@
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aframe Online Hacknight 2</title>
+  <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
+  <!--
+  <script type="text/javascript"
+      src="https://unpkg.com/aframe-thumb-controls-component@1.1.0/dist/aframe-thumb-controls-component.min.js">
+  </script>
+  -->
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/n5ro/Micah1.github.io@7022b232989831d0748167999c5ac2998fa0eeb2/scripts/pilaser.js"></script>
+  <script type="text/javascript" src="https://rawgit.com/fernandojsg/aframe-teleport-controls/master/dist/aframe-teleport-controls.min.js"></script>
+  <script src="https://cdn.rawgit.com/donmccurdy/aframe-extras/v4.1.2/dist/aframe-extras.min.js"></script>
+  <script src="https://unpkg.com/super-hands@3.0.0/dist/super-hands.min.js"></script>
+  <script src="https://rawgit.com/feiss/aframe-environment-component/master/dist/aframe-environment-component.min.js"></script>
+  <script src="https://cdn.rawgit.com/donmccurdy/aframe-physics-system/v4.0.1/dist/aframe-physics-system.min.js"></script>
+  <script type="text/javascript" src="/newthumbcontrols.js"></script>
+  <script type="text/javascript" src="https://unpkg.com/aframe-log-component/dist/aframe-log-component.min.js"></script>
+  <script>
+        (function () {
+            var carouselindex = 0
+            var log_history = [];
+            var menu_open = false;
+            var MAX_LOGS = null;
+
+            function VR_LOG(data) {
+                log_history.push(JSON.stringify(data));
+                if (MAX_LOGS && log_history.length > MAX_LOGS) {
+                    log_history.shift()
+                }
+                const console = document.getElementById('vr_console');
+                if (console) {
+                    console.setAttribute('value', log_history.join('\n'));
+                }
+            }
+            window.onerror = e => VR_LOG("error" + e);
+            const CLAMP_VELOCITY = 0.01;
+            const MAX_DELTA = 0.2;
+            const EPS = 10e-6;
+            const MAX_WARNINGS = 10;
+            const PI_2 = Math.PI / 2;
+          
+          AFRAME.registerComponent("follower", {
+              init: function() {
+                var follower = this.el;
+                var caller = document.querySelector('.caller');
+                follower.addEventListener('click', function(e) {
+                    VR_LOG('followerstart ok');
+                    console.log('follower begin');
+                    var position = caller.getAttribute('position')
+                    follower.setAttribute('animation', {
+                      to: {x: position.x+0.1, y: position.y+1, z: position.z+1}
+                    })
+                    follower.emit('follow')
+                });
+              }
+            });
+          
+    
+    AFRAME.registerComponent('thumb-movement-controls', {
+                init: function () {
+                    this.el.addEventListener('touchpaddown', () => {
+                        VR_LOG('touchpaddown ok');
+                    });
+                    this.el.addEventListener('thumbupstart', () => {
+                        VR_LOG('thumbupstart ok');
+                    });
+                    this.el.addEventListener('thumbupend', () => {
+                        VR_LOG('thumbupend ok');
+                    });
+                    this.el.addEventListener('thumbrightstart', () => {
+                        // VR_LOG('thumbrightstart ok');
+                        document.querySelector('a-scene').emit("rotateright");
+                    });
+                    this.el.addEventListener('thumbrightend', () => {
+                        VR_LOG('thumbrightend ok');
+                        document.querySelectorAll('.menu_plane').forEach(function (e) {
+                            e.object3D.visible = true;
+                       });
+                    });
+                    this.el.addEventListener('thumbleftstart', () => {
+                        VR_LOG('thumbleftstart ok');
+                        document.querySelector('a-scene').emit("rotateleft");
+
+                    });
+                    this.el.addEventListener('thumbleftend', () => {
+                        VR_LOG('thumbleftend ok');
+                        document.querySelectorAll('.menu_plane').forEach(function (e) {
+                        });
+                    });
+                    this.el.addEventListener('thumbdownstart', () => {
+                        VR_LOG('thumbupstart ok');
+                        document.querySelectorAll('.menu_plane').forEach(function (e) {
+                            e.object3D.visible = false;
+
+                        });
+                    });
+                    this.el.addEventListener('thumbdownend', () => {
+                        VR_LOG('thumbupend ok');
+                    });
+                }
+            });
+    
+    })();
+  </script>
+  
+  
+  
+  <script>
+ (function() {
+     
+     })();  
+    </script> 
+  <script>
+    AFRAME.registerComponent('change-color', {
+      schema: {
+        color: {default: 'red'}
+      },
+      init: function () {
+        var data = this.data;
+        var el = this.el;  // <a-box>
+        var defaultColor = el.getAttribute('material').color;
+        el.addEventListener('mousedown', function () {
+          el.setAttribute('color', data.color);
+        });
+        el.addEventListener('mouseup', function () {
+          el.setAttribute('color', defaultColor);
+        });
+      }
+    });
+  </script>
+</head>
+<body>
+  <a-scene raycaster="objects: .cube; showLine: false;" cursor="rayOrigin: mouse;"
+           touch-to-click-converter>
+    <a-plane static-body rotation="-90 0 0" width="200" height="200" color="#7BC8A4"></a-plane>
+    <a-mixin id="cube"
+             hoverable grabbable stretchable draggable droppable
+             shadow
+             event-set__dragdrop="_event: drag-drop; geometry.radius: 0.001; geometry.primitive: sphere"
+             event-set__hoveron="_event: hover-start; material.opacity: 0.7; transparent: true"
+             event-set__hoveroff="_event: hover-end; material.opacity: 1; transparent: false"
+             event-set__dragon="_event: dragover-start; material.wireframe: true"
+             event-set__dragoff="_event: dragover-end; material.wireframe: false">
+    </a-mixin>
+    
+    <a-sphere
+        class="cube" mixin="cube"
+        position="3 3 -3"
+        radius="0.1"
+        color="green"
+        follower
+        animation="property: position; easing: easeOutQuad; startEvents: follow"      
+    ></a-sphere>
+    <a-entity
+        geometry="primitive: box"
+        material="color: red"
+        scale="0.3 0.3 0.3"   
+        class="cube" mixin="cube"
+        position="-3 3 -3"
+        radius="0.1"
+        follower
+        animation="property: position; easing: easeOutQuad; startEvents: follow"      
+    ></a-entity>
+    <a-box scale="0.1 0.1 0.5" class="cube" mixin="cube" color="green" position="0 1 -4" change-color="color: yellow"
+           animation="property: position; easing: easeOutQuad; startEvents: follow"
+           follower></a-box>
+    <a-box scale="0.5 0.1 0.2" class="cube" mixin="cube" color="blue" position="-1 2 -4" change-color="color: #EF2D5E" 
+           animation="property: position; easing: easeOutQuad; startEvents: follow"
+           follower></a-box>
+    <a-box scale="0.2 0.3 0.3" class="cube follower" mixin="cube" color="yellow" position="1 2 -4" change-color="color: #EF2D5E" 
+           animation="property: position; easing: easeOutQuad; startEvents: follow"
+           follower></a-box>
+    
+    <a-entity id="cameraRig">
+     <a-entity id="cameraRig_1" character-controller="pivot: #head" position="0 1 1">
+      <a-entity camera wasd-controls look-controls
+                capture-mouse
+                static-body="shape: sphere; sphereRadius: 0.001"
+                super-hands="colliderEvent: raycaster-intersection;
+                             colliderEventProperty: els;
+                             colliderEndEvent:raycaster-intersection-cleared;
+                             colliderEndEventProperty: clearedEls;">
+      </a-entity>
+       <a-entity
+           teleport-controls="startEvents: thumbdownstart; endEvents: thumbdownend; cameraRig: #cameraRig; teleportOrigin: #head; curveShootingSpeed: 12; collisionEntities: [ground]"
+           
+            >
+       </a-entity>
+       
+       <a-entity id="left-hand" hand-controls="hand: left" sphere-collider="objects: a-box" super-hands comehere thumb-controls thumb-movement-controls
+                 ></a-entity>
+       <a-entity id="right-hand" class="caller pull" hand-controls="hand: right" sphere-collider="objects: a-box" super-hands comehere
+                 my-laser-controls  line="color: white; opacity: 0.75" 
+                 raycaster="objects:.cube; far: 50"
+                 thumb-controls thumb-movement-controls
+                 ></a-entity>
+       
+       
+       
+       
+    </a-entity>
+   </a-entity>
+    
+   
+    
+    
+    <a-text id="vr_console" font="dejavu"
+       geometry="primitive: plane; width: 2.5; height: 2;"
+       material="side: double; color: #000000"
+       rotation="0 0 0" position="0 2 -4" 
+       baseline="bottom" anchor="center" align="center" width="2" value="hello">
+    </a-text>
+  </a-scene>
+</body>
+</html>
