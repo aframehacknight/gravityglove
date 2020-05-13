@@ -175,11 +175,11 @@
       if (this.type === TYPE_PAD) {
         return Math.sqrt(axis[1] * axis[1] + axis[0] * axis[0]);
       } else {
-        const d = Math.sqrt(axis[3] * axis[3] + axis[2] * axis[2]);
-        if (d > 0 && d !== this.prevD) {
-          VR_LOG('distance = ' + d)
-          this.prevD = d
-        }
+        //const d = Math.sqrt(axis[3] * axis[3] + axis[2] * axis[2]);
+        //if (d > 0 && d !== this.prevD) {
+        //  VR_LOG('distance = ' + d)
+        //  this.prevD = d
+        //}
         return Math.sqrt(axis[3] * axis[3] + axis[2] * axis[2]);        
       }
     },
@@ -221,7 +221,11 @@
       var axis = this.axis;
       var flipY;
       flipY = this.type === TYPE_STICK ? -1 : 1;
-      angle = Math.atan2(axis[1] * flipY, axis[0]);
+      if (this.type === TYPE_PAD) {
+        angle = Math.atan2(axis[1] * flipY, axis[0]);
+      } else {
+        angle = Math.atan2(axis[3] * flipY, axis[2]);
+      }
       if (angle < 0) { angle = 2 * Math.PI + angle; }
       return THREE.Math.radToDeg(angle);
     }
