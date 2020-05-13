@@ -20,19 +20,20 @@
   <script>
         (function () {
             var carouselindex = 0
-            var log_history = [];
             var menu_open = false;
             var MAX_LOGS = null;
 
             function VR_LOG(data) {
-                log_history.push(JSON.stringify(data));
-                if (MAX_LOGS && log_history.length > MAX_LOGS) {
-                    log_history.shift()
+              console.log(data)
+              const vr_console = document.getElementById('vr_console');
+              if (vr_console) {
+                const lines = vr_console.getAttribute('value').split('\n');
+                lines.push(JSON.stringify(data));
+                if (MAX_LOGS && lines.length > MAX_LOGS) {
+                  lines.shift()
                 }
-                const console = document.getElementById('vr_console');
-                if (console) {
-                    console.setAttribute('value', log_history.join('\n'));
-                }
+                vr_console.setAttribute('value', lines.join('\n'));
+              }
             }
             window.onerror = e => VR_LOG("error" + e);
             const CLAMP_VELOCITY = 0.01;
@@ -41,13 +42,12 @@
             const MAX_WARNINGS = 10;
             const PI_2 = Math.PI / 2;
           
-          AFRAME.registerComponent("follower", {
+            AFRAME.registerComponent("follower", {
               init: function() {
                 var follower = this.el;
-                var caller = document.querySelector('.caller');
                 follower.addEventListener('click', function(e) {
                     VR_LOG('followerstart ok');
-                    console.log('follower begin');
+                    var caller = document.querySelector('.caller');
                     var position = caller.getAttribute('position')
                     follower.setAttribute('animation', {
                       to: {x: position.x+0.1, y: position.y+1, z: position.z+1}
@@ -57,6 +57,17 @@
               }
             });
           
+            AFRAME.registerComponent("primary-caller", {
+              init: function() {
+                this.el.addEventListener('controllerconnected', evt => {
+                  if (this.data.hand === evt.detail.component.data.hand) {
+                    document.querySelectorAll('.caller').forEach(el => el.className = '');
+                    this.el.className = 'caller pull';
+                    VR_LOG(this.data.hand + ' hand is now the caller');
+                  }
+                });
+              }
+            });
     
     AFRAME.registerComponent('thumb-movement-controls', {
                 init: function () {
@@ -189,7 +200,10 @@
             >
        </a-entity>
        
-       <a-entity id="left-hand" hand-controls="hand: left" sphere-collider="objects: a-box" super-hands comehere thumb-controls thumb-movement-controls
+       <a-entity id="left-hand" primary-caller="hand: left" hand-controls="hand: left" sphere-collider="objects: a-box" super-hands comehere
+                 my-laser-controls  line="color: white; opacity: 0.75"
+                 raycaster="objects:.cube; far: 50"
+                 thumb-controls thumb-movement-controls
                  ></a-entity>
        <a-entity id="right-hand" class="caller pull" hand-controls="hand: right" sphere-collider="objects: a-box" super-hands comehere
                  my-laser-controls  line="color: white; opacity: 0.75" 
@@ -197,14 +211,8 @@
                  thumb-controls thumb-movement-controls
                  ></a-entity>
        
-       
-       
-       
     </a-entity>
    </a-entity>
-    
-   
-    
     
     <a-text id="vr_console" font="dejavu"
        geometry="primitive: plane; width: 2.5; height: 2;"

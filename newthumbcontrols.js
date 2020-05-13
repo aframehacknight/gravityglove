@@ -4,18 +4,19 @@
   (factory());
 }(this, (function () { 'use strict';
                       
-  var log_history = [];
   var MAX_LOGS = null;
 
   function VR_LOG(data) {
-      log_history.push(JSON.stringify(data));
-      if (MAX_LOGS && log_history.length > MAX_LOGS) {
-          log_history.shift()
+    console.log(data)
+    const vr_console = document.getElementById('vr_console');
+    if (vr_console) {
+      const lines = vr_console.getAttribute('value').split('\n');
+      lines.push(JSON.stringify(data));
+      if (MAX_LOGS && lines.length > MAX_LOGS) {
+        lines.shift()
       }
-      const console = document.getElementById('vr_console');
-      if (console) {
-          console.setAttribute('value', log_history.join('\n'));
-      }
+      vr_console.setAttribute('value', lines.join('\n'));
+    }
   }
   window.onerror = e => VR_LOG("error" + e);                    
 
@@ -69,8 +70,7 @@
 
     init: function () {
       var el = this.el;
-      console.log('hello');
-      VR_LOG('hello 2')
+      VR_LOG('newthumbcontrols init')
       this.onTrackpadDown = this.onTrackpadDown.bind(this);
       this.onTrackpadUp = this.onTrackpadUp.bind(this);
 
@@ -81,21 +81,19 @@
       this.type = TYPE_STICK;
     
       el.addEventListener('controllerconnected', evt => {
-        console.log(evt.detail.name);
-        VR_LOG(evt.detail.name);
+        VR_LOG("newthumbcontrols: controllerconnected");
+        VR_LOG(evt.detail.name + ', hand: ' + evt.detail.component.data.hand);
         if (evt.detail.name === 'generic-tracked-controller-controls')
           return;
         
         if (evt.detail.name === 'oculus-touch-controls' ||
             evt.detail.name === 'windows-motion-controls') {
           this.type = TYPE_STICK;
-          console.log('type stick', this.type);
-          VR_LOG('vr type stick');
+          VR_LOG('type = TYPE_STICK');
           return;
         }
         this.type = TYPE_PAD;
-        console.log('type pad', this.type);
-        VR_LOG('vr type pad');
+        VR_LOG('type = TYPE_PAD');
       });
 
       this.axis = el.components['tracked-controls'].axis;
@@ -150,16 +148,13 @@
 
       // Stick pulled. Store direction and emit start event.
       if (!this.directionStick && this.getDistance() > this.data.thresholdStick) {
-        console.log('1')
-        VR_LOG('1')
         direction = this.getDirection();
-        VR_LOG(direction);
-        console.log(direction);
+        VR_LOG('In tick(), direction set to ' + direction);
         if (!direction) { return; }
         this.directionStick = direction;
         el.emit(EVENTS.NULL.START, null, false);
         el.emit(EVENTS[this.directionStick].START, null, false);
-        console.log('event: ', EVENTS[this.directionStick].START)
+        VR_LOG('event: ' + EVENTS[this.directionStick].START)
         return;
       }
 
@@ -167,7 +162,7 @@
       if (this.directionStick && this.getDistance() < this.data.thresholdStick) {
         el.emit(EVENTS.NULL.END, null, false);
         el.emit(EVENTS[this.directionStick].END, null, false);
-        console.log('event: ', EVENTS[this.directionStick].END)
+        VR_LOG('event: ' + EVENTS[this.directionStick].END)
         this.directionStick = '';
       }
     },
@@ -181,8 +176,10 @@
         return Math.sqrt(axis[1] * axis[1] + axis[0] * axis[0]);
       } else {
         const d = Math.sqrt(axis[3] * axis[3] + axis[2] * axis[2]);
-        if (d > 0)
-          console.log('distance = ', d)
+        if (d > 0 && d !== this.prevD) {
+          VR_LOG('distance = ' + d)
+          this.prevD = d
+        }
         return Math.sqrt(axis[3] * axis[3] + axis[2] * axis[2]);        
       }
     },
