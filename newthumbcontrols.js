@@ -172,14 +172,13 @@
      */
     getDistance: function () {
       var axis = this.axis;
+
+      // this.axis comes from the tracked-controls component, which copies it from this.controller.gamepad.axes.
+      // See https://immersive-web.github.io/webxr-gamepads-module/#xr-standard-gamepad-mapping
+      // for an explanation of gamepad.axes.
       if (this.type === TYPE_PAD) {
         return Math.sqrt(axis[1] * axis[1] + axis[0] * axis[0]);
       } else {
-        //const d = Math.sqrt(axis[3] * axis[3] + axis[2] * axis[2]);
-        //if (d > 0 && d !== this.prevD) {
-        //  VR_LOG('distance = ' + d)
-        //  this.prevD = d
-        //}
         return Math.sqrt(axis[3] * axis[3] + axis[2] * axis[2]);        
       }
     },
@@ -219,14 +218,15 @@
     getAngle: function () {
       var angle;
       var axis = this.axis;
-      var flipY;
-      flipY = this.type === TYPE_STICK ? -1 : 1;
+
+      // See comments in getDistance() about axis.
       if (this.type === TYPE_PAD) {
-        angle = Math.atan2(axis[1] * flipY, axis[0]);
+        angle = Math.atan2(-axis[1], axis[0]);
       } else {
-        angle = Math.atan2(axis[3] * flipY, axis[2]);
+        angle = Math.atan2(-axis[3], axis[2]);
       }
       if (angle < 0) { angle = 2 * Math.PI + angle; }
+      VR_LOG('angle = ' + THREE.Math.radToDeg(angle));
       return THREE.Math.radToDeg(angle);
     }
   });
