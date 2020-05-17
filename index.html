@@ -2,20 +2,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aframe Online Hacknight 2</title>
+  <title>Aframe Online Hacknight 4</title>
   <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
-  <!--
   <script type="text/javascript"
-      src="https://unpkg.com/aframe-thumb-controls-component@1.1.0/dist/aframe-thumb-controls-component.min.js">
+      src="https://cdn.jsdelivr.net/gh/aframehacknight/gravityglove@ead93c5f958630d742cd28bd6a73b7271c4806b4/newthumbcontrols.js">
   </script>
-  -->
   <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/n5ro/Micah1.github.io@7022b232989831d0748167999c5ac2998fa0eeb2/scripts/pilaser.js"></script>
   <script type="text/javascript" src="https://rawgit.com/fernandojsg/aframe-teleport-controls/master/dist/aframe-teleport-controls.min.js"></script>
   <script src="https://cdn.rawgit.com/donmccurdy/aframe-extras/v4.1.2/dist/aframe-extras.min.js"></script>
   <script src="https://unpkg.com/super-hands@3.0.0/dist/super-hands.min.js"></script>
   <script src="https://rawgit.com/feiss/aframe-environment-component/master/dist/aframe-environment-component.min.js"></script>
   <script src="https://cdn.rawgit.com/donmccurdy/aframe-physics-system/v4.0.1/dist/aframe-physics-system.min.js"></script>
-  <script type="text/javascript" src="/gravityglove/newthumbcontrols.js"></script>
+<!--   <script type="text/javascript" src="/newthumbcontrols.js"></script> -->
   <script type="text/javascript" src="https://unpkg.com/aframe-log-component/dist/aframe-log-component.min.js"></script>
   <script>
         (function () {
@@ -54,20 +52,30 @@
                     })
                     follower.emit('follow')
                 });
+                // follower.addEventListener('raycaster-intersected', evt => {
+                //   const position = evt.detail.el.getAttribute('position');
+                //     follower.setAttribute('animation', {
+                //       to: {x: position.x+0.1, y: position.y+1, z: position.z+1}
+                //     })
+                //     follower.emit('follow')
+                // });
               }
             });
           
-            AFRAME.registerComponent("primary-caller", {
-              init: function() {
-                this.el.addEventListener('controllerconnected', evt => {
-                  if (this.data.hand === evt.detail.component.data.hand) {
-                    document.querySelectorAll('.caller').forEach(el => el.className = '');
-                    this.el.className = 'caller pull';
-                    VR_LOG(this.data.hand + ' hand is now the caller');
-                  }
-                });
-              }
-            });
+            // AFRAME.registerComponent("primary-caller", {
+            //   init: function() {
+            //     this.el.addEventListener('controllerconnected', evt => {
+            //       if (this.data.hand === evt.detail.component.data.hand) {
+            //         document.querySelectorAll('.caller').forEach(el => el.className = '');
+            //         this.el.className = 'caller pull';
+            //         VR_LOG(this.data.hand + ' hand is now the caller');
+            //       }
+            //     });
+            //     follower.addEventListener('raycaster-intersected', evt => {
+            //     VR_LOG('raycaster intersected');
+            //     });
+            //   }
+            // });
     
     AFRAME.registerComponent('thumb-movement-controls', {
                 init: function () {
@@ -143,7 +151,7 @@
   </script>
 </head>
 <body>
-  <a-scene raycaster="objects: .cube; showLine: false;" cursor="rayOrigin: mouse;"
+  <a-scene raycaster="objects: .cube; far: 50" cursor="rayOrigin: mouse;"
            touch-to-click-converter>
     <a-plane static-body rotation="-90 0 0" width="200" height="200" color="#7BC8A4"></a-plane>
     <a-mixin id="cube"
@@ -194,21 +202,19 @@
                              colliderEndEvent:raycaster-intersection-cleared;
                              colliderEndEventProperty: clearedEls;">
       </a-entity>
-       <a-entity
-           teleport-controls="startEvents: thumbdownstart; endEvents: thumbdownend; cameraRig: #cameraRig; teleportOrigin: #head; curveShootingSpeed: 12; collisionEntities: [ground]"
-           
-            >
-       </a-entity>
-       
        <a-entity id="left-hand" primary-caller="hand: left" hand-controls="hand: left" sphere-collider="objects: a-box" super-hands comehere
                  my-laser-controls  line="color: white; opacity: 0.75"
                  raycaster="objects:.cube; far: 50"
                  thumb-controls thumb-movement-controls
+                 teleport-controls="startEvents: thumbdownstart; endEvents: thumbdownend; cameraRig: #cameraRig;
+                                      teleportOrigin: #head; curveShootingSpeed: 12; collisionEntities: [ground]; button: trigger;"
                  ></a-entity>
        <a-entity id="right-hand" class="caller pull" hand-controls="hand: right" sphere-collider="objects: a-box" super-hands comehere
                  my-laser-controls  line="color: white; opacity: 0.75" 
                  raycaster="objects:.cube; far: 50"
                  thumb-controls thumb-movement-controls
+                 teleport-controls="startEvents: thumbdownstart; endEvents: thumbdownend; cameraRig: #cameraRig;
+                                      teleportOrigin: #head; curveShootingSpeed: 12; collisionEntities: [ground]"
                  ></a-entity>
        
     </a-entity>
