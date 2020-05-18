@@ -5,7 +5,7 @@
   <title>Aframe Online Hacknight 4</title>
   <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
   <script type="text/javascript"
-      src="https://cdn.jsdelivr.net/gh/aframehacknight/gravityglove@ead93c5f958630d742cd28bd6a73b7271c4806b4/newthumbcontrols.js">
+      src="https://cdn.jsdelivr.net/gh/aframehacknight/gravityglove@7b189a9/newthumbcontrols.js">
   </script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/n5ro/Micah1.github.io@7022b232989831d0748167999c5ac2998fa0eeb2/scripts/pilaser.js"></script>
   <script type="text/javascript" src="https://rawgit.com/fernandojsg/aframe-teleport-controls/master/dist/aframe-teleport-controls.min.js"></script>
@@ -83,9 +83,11 @@
                         VR_LOG('touchpaddown ok');
                     });
                     this.el.addEventListener('thumbupstart', () => {
+                        // Should cause mousedown event, due to my-laser-controls
                         VR_LOG('thumbupstart ok');
                     });
                     this.el.addEventListener('thumbupend', () => {
+                        // Should cause mouseup event, due to my-laser-controls
                         VR_LOG('thumbupend ok');
                     });
                     this.el.addEventListener('thumbrightstart', () => {
@@ -109,14 +111,14 @@
                         });
                     });
                     this.el.addEventListener('thumbdownstart', () => {
-                        VR_LOG('thumbupstart ok');
+                        VR_LOG('thumbdownstart ok');
                         document.querySelectorAll('.menu_plane').forEach(function (e) {
                             e.object3D.visible = false;
 
                         });
                     });
                     this.el.addEventListener('thumbdownend', () => {
-                        VR_LOG('thumbupend ok');
+                        VR_LOG('thumbdownend ok');
                     });
                 }
             });
