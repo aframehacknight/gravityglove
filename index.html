@@ -192,14 +192,14 @@
                              colliderEndEvent:raycaster-intersection-cleared;
                              colliderEndEventProperty: clearedEls;">
       </a-entity>
-       <a-entity id="left-hand" hand-controls="hand: left" sphere-collider="objects: a-box" super-hands comehere
+       <a-entity id="left-hand" hand-controls="hand: left" sphere-collider="objects: [grabbable]" super-hands comehere
                  my-laser-controls  line="color: white; opacity: 0.75"
                  raycaster="objects:.cube; far: 50"
                  thumb-controls thumb-movement-controls
                  teleport-controls="startEvents: thumbdownstart; endEvents: thumbdownend; cameraRig: #cameraRig;
                                       teleportOrigin: #head; curveShootingSpeed: 12; collisionEntities: [ground]; button: trigger;"
                  ></a-entity>
-       <a-entity id="right-hand" class="pull" hand-controls="hand: right" sphere-collider="objects: a-box" super-hands comehere
+       <a-entity id="right-hand" class="pull" hand-controls="hand: right" sphere-collider="objects: [grabbable]" super-hands comehere
                  my-laser-controls  line="color: white; opacity: 0.75" 
                  raycaster="objects:.cube; far: 50"
                  thumb-controls thumb-movement-controls
