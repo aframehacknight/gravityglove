@@ -46,48 +46,34 @@
             AFRAME.registerComponent("follower", {
               init: function() {
                 var follower = this.el;
-                const position = new THREE.Vector3();
+                const endPoint = new THREE.Vector3();
+                const midPoint = new THREE.Vector3();
+                const point1 = document.querySelector('#point1')
+                const point2 = document.querySelector('#point2')
+                const point3 = document.querySelector('#point3')
+
                 follower.addEventListener('click', function(e) {
-                  if (e.detail.cursorEl) {
+                  const caller = e.detail.cursorEl
+                  if (caller && caller !== follower.sceneEl) {
                     VR_LOG('followerstart ok');
-                    e.detail.cursorEl.object3D.getWorldPosition(position);
-                    VR_LOG(position);
-                    follower.setAttribute('animation', {
-                      to: {x: position.x+0, y: position.y+0, z: position.z+0}
-                      //to: {x: position.x+0.1, y: position.y+1, z: position.z+1}
-                    })
-//                     getDistance
-//                     set positions
-//                     const point1 = document.querySelector('#point1')
-//                     point1.setAttribute('position', '1 1 1')
-//                     const point2 = document.querySelector('#point2')
-//                     point2.setAttribute('position', '1 2 1')
-//                     const point3 = document.querySelector('#point3')
-//                     point3.setAttribute('position', '2 2 1')
-//                     follower.setAttribute('alongpath', '#track2')
+                    const startingPoint = follower.getAttribute('position')
+                    caller.object3D.getWorldPosition(endPoint);
+                    const dist = startingPoint.distanceTo(endPoint)
+                    midPoint.lerpVectors(startingPoint, endPoint, 0.5)
+                    midPoint.y += dist / 2
 
+                    point1.setAttribute('position', startingPoint)
+                    point2.setAttribute('position', midPoint)
+                    point3.setAttribute('position', endPoint)
 
-//                     el.getAttribute('geometry');
-
-//                     this.canvas = document.getElementById(this.data);
-//                     follower.setAtrribute('alongpath', {
-//                       curve: '#track2'
-
-//                     });
+                    follower.removeAttribute('alongpath')
+                    follower.setAttribute('alongpath', {
+                      curve: '#pathToGlove'
+                    });
 
                     follower.emit('follow')
                   }
                 });
-
-
-
-                // follower.addEventListener('raycaster-intersected', evt => {
-                //   const position = evt.detail.el.getAttribute('position');
-                //     follower.setAttribute('animation', {
-                //       to: {x: position.x+0.1, y: position.y+1, z: position.z+1}
-                //     })
-                //     follower.emit('follow')
-                // });
               }
             });
           
@@ -133,19 +119,11 @@
   <a-scene raycaster="objects: .cube; far: 50" cursor="rayOrigin: mouse;"
            touch-to-click-converter>
 
-    <a-curve id="track1">
-      <a-curve-point position="-2 2 -3"></a-curve-point>
-      <a-curve-point position="0 1 -3"></a-curve-point>
-      <a-curve-point position="2 2 -3"></a-curve-point>
+    <a-curve id="pathToGlove">
+      <a-curve-point id="point1" position=""></a-curve-point>
+      <a-curve-point id="point2" position=""></a-curve-point>
+      <a-curve-point id="point3" position=""></a-curve-point>
     </a-curve>
-
-    <a-curve id="track2">
-      <a-curve-point id="point1" position="-2 2 -3"></a-curve-point>
-      <a-curve-point id="point2" position="0 1 -3"></a-curve-point>
-      <a-curve-point id="point3" position="2 2 -3"></a-curve-point>
-    </a-curve>
-
-    <a-box alongpath="curve: #track1" color="green"></a-box>
 
     <a-plane static-body rotation="-90 0 0" width="200" height="200" color="#7BC8A4"></a-plane>
     <a-mixin id="cube"
