@@ -11,7 +11,7 @@ function rotateCamera(cameraRig, relativeRotation) {
 AFRAME.registerComponent('snapturn', {
   init: function () {
     
-    var consoleText = document.querySelector('#console');
+    // var consoleText = document.querySelector('#console');
     var cameraRig = document.querySelector('#cameraRig_1');
     var snapTurned = false;
     
@@ -26,35 +26,35 @@ AFRAME.registerComponent('snapturn', {
       }
       
       if (evt.detail.y > 0.95) {
-        consoleText.setAttribute('text', 'value', "DOWN");
-        console.log("DOWN");
+        // consoleText.setAttribute('text', 'value', "DOWN");
+        // console.log("DOWN");
       }
       if (evt.detail.y < -0.95) {
-        consoleText.setAttribute('text', 'value', "UP");
-        console.log("UP");
+        // consoleText.setAttribute('text', 'value', "UP");
+        // console.log("UP");
       }
       if (evt.detail.x < -0.95) {
         rotateCamera(cameraRig, 45);
         snapTurned = true;
         
-        consoleText.setAttribute('text', 'value', "LEFT");
-        console.log("LEFT");
+        // consoleText.setAttribute('text', 'value', "LEFT");
+        // console.log("LEFT");
       }
       if (evt.detail.x > 0.95) {
         rotateCamera(cameraRig, -45);
         snapTurned = true;
         
-        consoleText.setAttribute('text', 'value', "RIGHT");
-        console.log("RIGHT");
+        // consoleText.setAttribute('text', 'value', "RIGHT");
+        // console.log("RIGHT");
       }
     });
     
     // check for thumbstick touch 
-    this.el.addEventListener('thumbstickchanged', function() {
-      consoleText.setAttribute('text', 'value', "PRESSED");
-    });
+    // this.el.addEventListener('thumbstickchanged', function() {
+      // consoleText.setAttribute('text', 'value', "PRESSED");
+    // });
 
-    console.log("INIT");
+    // console.log("INIT");
   }
 });
 
