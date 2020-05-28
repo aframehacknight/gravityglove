@@ -8,7 +8,8 @@
     <script src="https://unpkg.com/aframe-event-set-component@5.0.0/dist/aframe-event-set-component.min.js"></script>
     <script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/MignonBelongie/superframe@e716e89/components/thumb-controls/dist/aframe-thumb-controls-component.min.js"></script>
-    <script type="text/javascript" src="/snapturn.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/aframehacknight/gravityglove@154b139/snapturn.js"></script>
+<!--     <script type="text/javascript" src="/snapturn.js"></script> -->
     <script type="text/javascript" src="https://rawgit.com/fernandojsg/aframe-teleport-controls/master/dist/aframe-teleport-controls.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/n5ro/Micah1.github.io@7022b232989831d0748167999c5ac2998fa0eeb2/scripts/pilaser.js"></script>
     <script>
@@ -32,12 +33,13 @@
             const EPS = 10e-6;
             const MAX_WARNINGS = 10;
             const PI_2 = Math.PI / 2;
-            const DURATION = 1000
+            const DURATION = 500
           
      AFRAME.registerComponent("follower", {
               init: function() {
                 var follower = this.el;
                 let radius = 0;
+                // VR_LOG(follower.object3D)
                 follower.object3D.traverse(
                 o=>{
                   if(o.geometry){
@@ -45,17 +47,17 @@
                     return 
                   }
                 });
-                VR_LOG(radius);
+                //VR_LOG(radius);
                 const endPoint = new THREE.Vector3();
                 const midPoint = new THREE.Vector3();
                 follower.moving = false
-                follower.addEventListener('click', function(e) {
+                follower.addEventListener('click', e=>{
                   const caller = e.detail.cursorEl
                   if (caller && caller !== follower.sceneEl) {
                     VR_LOG('Gravity Gloves test ok');
                     const startingPoint = follower.getAttribute('position')
                     caller.object3D.getWorldPosition(endPoint);
-                    endPoint.y += 0.1 + radius;
+                    endPoint.y += 0.2 + radius;
                     const dist = startingPoint.distanceTo(endPoint)
                     midPoint.lerpVectors(startingPoint, endPoint, 0.5)
                     midPoint.y += dist / 3
@@ -78,7 +80,7 @@
                     linearDamping: 0.1,
                     angularDamping: 0.1
                     });
-                    }, 1000);
+                    }, 500);
                     
                   }
                 });
@@ -183,6 +185,7 @@
         class="cube" mixin="cube"
         position="-4 4 -3"></a-entity>
     <a-entity geometry="primitive: sphere; radius: 0.3" material="color: #00b300" class="cube" mixin="cube" position="4 5 -4" change-color="color: yellow"></a-entity>
+    <a-sphere position="4 8 -4" radius="0.3" mixin="cube"></a-sphere>
     <a-entity geometry="primitive: sphere; radius: 0.3" material="color: #002080" class="cube" mixin="cube" position="-4 7 -4" change-color="color: #EF2D5E"></a-entity>
     <a-entity geometry="primitive: sphere; radius: 0.3" material="color: #8000ff" class="cube" mixin="cube" position="4 7 -4" change-color="color: #EF2D5E"></a-entity>
       <a-entity dynamic-body class="cube" geometry="primitive: sphere; radius: 0.4" mixin="cube" position="-1 0.45 -0" material="color: red"></a-entity>
@@ -204,12 +207,12 @@
           <a-entity id="right-hand" hand-controls="hand: right" mixin="hands"></a-entity>
       </a-entity>
     </a-entity>
-      <a-text static-body id="vr_console" font="dejavu"
+        <a-text id="vr_console" font="dejavu"
        geometry="primitive: plane; width: 2.5; height: 20;"
        material="side: double; color: #000000"
-       rotation="0 0 0" position="1.2 0.5 -4" 
+       rotation="0 0 0" position="1.2 0.4 -4" 
        baseline="bottom" anchor="center" align="center" width="2" value="hello">
-      </a-text>
+    </a-text>
     </a-scene>
 </body>
 </html>
