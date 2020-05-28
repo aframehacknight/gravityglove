@@ -1,3 +1,9 @@
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory() :
+  typeof define === 'function' && define.amd ? define(factory) :
+  (factory());
+}(this, (function () { 'use strict';
+
 function rotateCamera(cameraRig, relativeRotation) {
   cameraRig.object3D.rotation.y += relativeRotation;
 }
@@ -51,3 +57,5 @@ AFRAME.registerComponent('snapturn', {
     console.log("INIT");
   }
 });
+
+})));
