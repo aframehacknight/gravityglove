@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>A-Frame WebXR Hacknight Testing our Gravity Gloves with Superhands</title>
-    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script> 
+    <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://unpkg.com/super-hands/dist/super-hands.min.js"></script> 
     <script src="https://cdn.rawgit.com/donmccurdy/aframe-extras/v4.1.2/dist/aframe-extras.min.js"></script>
     <script src="https://cdn.rawgit.com/donmccurdy/aframe-physics-system/v4.0.1/dist/aframe-physics-system.min.js"></script>
@@ -35,19 +35,9 @@
             const PI_2 = Math.PI / 2;
             const DURATION = 500
           
-     AFRAME.registerComponent("follower", {
+            AFRAME.registerComponent("follower", {
               init: function() {
                 var follower = this.el;
-                let radius = 0;
-                // VR_LOG(follower.object3D)
-                follower.object3D.traverse(
-                o=>{
-                  if(o.geometry){
-                    radius = o.geometry.boundingSphere.radius;
-                    return 
-                  }
-                });
-                //VR_LOG(radius);
                 const endPoint = new THREE.Vector3();
                 const midPoint = new THREE.Vector3();
                 follower.moving = false
@@ -56,8 +46,17 @@
                   if (caller && caller !== follower.sceneEl) {
                     VR_LOG('Gravity Gloves test ok');
                     const startingPoint = follower.getAttribute('position')
+
                     caller.object3D.getWorldPosition(endPoint);
-                    endPoint.y += 0.2 + radius;
+                    let radius = 0;
+                    follower.object3D.traverse(o => {
+                      if (o.geometry && o.geometry.boundingSphere) {
+                        radius = o.geometry.boundingSphere.radius;
+                      }
+                    });
+                    VR_LOG('radius: ' + radius);
+                    endPoint.y += radius;
+
                     const dist = startingPoint.distanceTo(endPoint)
                     midPoint.lerpVectors(startingPoint, endPoint, 0.5)
                     midPoint.y += dist / 3
@@ -143,7 +142,7 @@
         <img id="aframewide" src="https://i.imgur.com/qV5T2tX.png">
         <img id="aframesquare" src="https://i.imgur.com/pLvDWHV.png">
       </a-assets>
-
+       
       <a-plane link="href: https://www.meetup.com/virtualreality/; title: Aframe WebXR Online Hacknight every Wednesday 7pm to 10pm PST;
               image: #aframewide; on: click" static-body class="cube" side="double" visible="true" material="src: #aframewide" position="0 1.8 6"
               onmouseenter="this.setAttribute('link', {highlighted: true})"
@@ -202,12 +201,12 @@
       
     <a-entity id="cameraRig">
       <a-entity id="cameraRig_1" character-controller="pivot: #head" position="0 0.2 0">
-          <a-entity camera wasd-controls look-controls raycaster="objects: .cube; far: 50" cursor="rayOrigin: mouse;"></a-entity>
-          <a-entity id="left-hand" hand-controls="hand: left" mixin="hands"></a-entity>
-          <a-entity id="right-hand" hand-controls="hand: right" mixin="hands"></a-entity>
+        <a-entity camera wasd-controls look-controls raycaster="objects: .cube; far: 50" cursor="rayOrigin: mouse;"></a-entity>
+        <a-entity id="left-hand" hand-controls="hand: left" mixin="hands"></a-entity>
+        <a-entity id="right-hand" hand-controls="hand: right" mixin="hands"></a-entity>
       </a-entity>
     </a-entity>
-        <a-text id="vr_console" font="dejavu"
+    <a-text id="vr_console" font="dejavu"
        geometry="primitive: plane; width: 2.5; height: 20;"
        material="side: double; color: #000000"
        rotation="0 0 0" position="1.2 0.4 -4" 
