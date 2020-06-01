@@ -35,6 +35,17 @@
             const PI_2 = Math.PI / 2;
             const DURATION = 500
           
+            AFRAME.registerComponent("controller-adapter", {
+              init: function() {
+                this.el.addEventListener('squeezedown', e => {
+                  this.el.emit('gripdown', e.detail)
+                })
+                this.el.addEventListener('squeezeup', e => {
+                  this.el.emit('gripup', e.detail)
+                })
+              }
+            })
+
             AFRAME.registerComponent("follower", {
               init: function() {
                 var follower = this.el;
@@ -202,8 +213,8 @@
     <a-entity id="cameraRig">
       <a-entity id="cameraRig_1" character-controller="pivot: #head" position="0 0.2 0">
         <a-entity camera wasd-controls look-controls raycaster="objects: .cube; far: 50" cursor="rayOrigin: mouse;"></a-entity>
-        <a-entity id="left-hand" hand-controls="hand: left" mixin="hands"></a-entity>
-        <a-entity id="right-hand" hand-controls="hand: right" mixin="hands"></a-entity>
+        <a-entity id="left-hand" hand-controls="hand: left" mixin="hands" controller-adapter></a-entity>
+        <a-entity id="right-hand" hand-controls="hand: right" mixin="hands" controller-adapter></a-entity>
       </a-entity>
     </a-entity>
     <a-text id="vr_console" font="dejavu"
